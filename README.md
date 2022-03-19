@@ -5,11 +5,11 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.ir_remote_input.svg)](https://www.npmjs.com/package/iobroker.ir_remote_input)
 ![Number of Installations](https://iobroker.live/badges/ir_remote_input-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/ir_remote_input-stable.svg)
-[![Dependency Status](https://img.shields.io/david/kevkong/iobroker.ir_remote_input.svg)](https://david-dm.org/kevkong/iobroker.ir_remote_input)
+[![Dependency Status](https://img.shields.io/david/kevkong85/iobroker.ir_remote_input.svg)](https://david-dm.org/kevkong85/iobroker.ir_remote_input)
 
 [![NPM](https://nodei.co/npm/iobroker.ir_remote_input.png?downloads=true)](https://nodei.co/npm/iobroker.ir_remote_input/)
 
-**Tests:** ![Test and Release](https://github.com/kevkong/ioBroker.ir_remote_input/workflows/Test%20and%20Release/badge.svg)
+**Tests:** ![Test and Release](https://github.com/kevkong85/ioBroker.ir_remote_input/workflows/Test%20and%20Release/badge.svg)
 
 ## ir_remote_input adapter for ioBroker
 
@@ -30,7 +30,7 @@ You are almost done, only a few steps left:
     ```
 1. Link your local repository with the one on GitHub:  
     ```bash
-    git remote add origin https://github.com/kevkong/ioBroker.ir_remote_input
+    git remote add origin https://github.com/kevkong85/ioBroker.ir_remote_input
     ```
 
 1. Push all files to the GitHub repo:  
@@ -115,12 +115,12 @@ For later updates, the above procedure is not necessary. Just do the following:
 -->
 
 ### **WORK IN PROGRESS**
-* (kevkong) initial release
+* (kevkong85) initial release
 
 ## License
 MIT License
 
-Copyright (c) 2022 kevkong <psikeo@gmail.com>
+Copyright (c) 2022 kevkong85 <kevkong@web.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
