@@ -1,0 +1,79 @@
+{
+    "common": {
+        "name": "ir_remote_input",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "IR Remote Input",
+        "titleLang": {
+            "en": "IR Remote Input",
+            "de": "IR-Fernbedienungseingang",
+            "ru": "ИК-пульт дистанционного управления",
+            "pt": "Entrada Remota IR",
+            "nl": "IR-ingang op afstand",
+            "fr": "Entrée à distance IR",
+            "it": "Ingresso remoto IR",
+            "es": "Entrada remota IR",
+            "pl": "Zdalne wejście na podczerwień",
+            "zh-cn": "红外遥控输入"
+        },
+        "desc": {
+            "en": "ir_remote_input",
+            "de": "ir_remote_input",
+            "ru": "ir_remote_input",
+            "pt": "ir_remote_input",
+            "nl": "ir_remote_input",
+            "fr": "ir_remote_input",
+            "it": "ir_remote_input",
+            "es": "ir_remote_input",
+            "pl": "ir_remote_input",
+            "zh-cn": "ir_remote_input"
+        },
+        "authors": [
+            "kevkong <psikeo@gmail.com>"
+        ],
+        "keywords": [
+            "ioBroker",
+            "template",
+            "Smart Home",
+            "home automation"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "build/main.js",
+        "icon": "ir_remote_input.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/kevkong/ioBroker.ir_remote_input/main/admin/ir_remote_input.png",
+        "readme": "https://github.com/kevkong/ioBroker.ir_remote_input/blob/main/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "protocols",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "materialize": true,
+        "dependencies": [
+            {
+                "js-controller": ">=2.0.0"
+            }
+        ]
+    },
+    "native": {
+        "option1": true,
+        "option2": "42"
+    },
+    "objects": [],
+    "instanceObjects": []
+}
