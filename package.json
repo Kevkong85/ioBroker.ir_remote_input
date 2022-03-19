@@ -19,7 +19,8 @@
     "url": "https://github.com/kevkong/ioBroker.ir_remote_input"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.0"
+    "@iobroker/adapter-core": "^2.6.0",
+    "evdev": "^0.3.0"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^2.2.2",
@@ -70,7 +71,8 @@
     "check": "tsc --noEmit",
     "lint": "eslint --ext .ts src/",
     "translate": "translate-adapter",
-    "release": "release-script"
+    "release": "release-script",
+    "build:dev": "npm run build && npm pack && cd /opt/iobroker && npm install /home/pi/projects/ioBroker.ir_remote_input/iobroker.ir_remote_input-0.0.1.tgz && iobroker upload ir_remote_input"
   },
   "bugs": {
     "url": "https://github.com/kevkong/ioBroker.ir_remote_input/issues"

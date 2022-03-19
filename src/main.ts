@@ -8,8 +8,11 @@ import * as utils from '@iobroker/adapter-core';
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
+import EvdevReader from 'evdev';
 
 class IrRemoteInput extends utils.Adapter {
+
+    private _reader: EvdevReader;
 
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
@@ -21,6 +24,7 @@ class IrRemoteInput extends utils.Adapter {
         // this.on('objectChange', this.onObjectChange.bind(this));
         // this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
+        this._reader = new EvdevReader({ raw: false });
     }
 
     /**
@@ -33,6 +37,34 @@ class IrRemoteInput extends utils.Adapter {
         // this.config:
         this.log.info('config option1: ' + this.config.option1);
         this.log.info('config option2: ' + this.config.option2);
+
+        this._reader.on('EV_KEY', data => {
+            this.log.info('key : ' + data.code + ' - ' + data.value);
+        });
+        this._reader.on('EV_ABS', data => {
+            this.log.info('Absolute axis : ' + data.code + ' - ' + data.value);
+        });
+        this._reader.on('EV_REL', data => {
+            this.log.info('Relative axis : ' + data.code + ' - ' + data.value);
+        });
+        this._reader.on('error', err => {
+            this.log.info('reader error : ' + err);
+        });
+
+        this._reader.search('/dev/input/by-path', 'platform-ir-receiver@7-event', (err, files) => {
+            if(!err) {
+                this.log.info('device found: ' + JSON.stringify(files));
+            } else {
+                this.log.info('device not found');
+            }
+
+            const device = this._reader.open(files[0]);
+
+            device.on('open', () => {
+                this.log.info('device on opened event');
+            });
+
+        });
 
         /*
         For every state in the system there has to be also an object of type state
@@ -85,14 +117,16 @@ class IrRemoteInput extends utils.Adapter {
      */
     private onUnload(callback: () => void): void {
         try {
+            this.log.debug('unloading...');
             // Here you must clear all timeouts or intervals that may still be active
             // clearTimeout(timeout1);
             // clearTimeout(timeout2);
             // ...
             // clearInterval(interval1);
-
-            callback();
+            this._reader.close();
         } catch (e) {
+            this.log.info('error while unload: ' + e);
+        } finally {
             callback();
         }
     }

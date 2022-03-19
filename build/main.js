@@ -31,6 +31,7 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
 var utils = __toESM(require("@iobroker/adapter-core"));
+var import_evdev = __toESM(require("evdev"));
 class IrRemoteInput extends utils.Adapter {
   constructor(options = {}) {
     super(__spreadProps(__spreadValues({}, options), {
@@ -39,10 +40,34 @@ class IrRemoteInput extends utils.Adapter {
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
+    this._reader = new import_evdev.default({ raw: false });
   }
   async onReady() {
     this.log.info("config option1: " + this.config.option1);
     this.log.info("config option2: " + this.config.option2);
+    this._reader.on("EV_KEY", (data) => {
+      this.log.info("key : " + data.code + " - " + data.value);
+    });
+    this._reader.on("EV_ABS", (data) => {
+      this.log.info("Absolute axis : " + data.code + " - " + data.value);
+    });
+    this._reader.on("EV_REL", (data) => {
+      this.log.info("Relative axis : " + data.code + " - " + data.value);
+    });
+    this._reader.on("error", (err) => {
+      this.log.info("reader error : " + err);
+    });
+    this._reader.search("/dev/input/by-path", "platform-ir-receiver@7-event", (err, files) => {
+      if (!err) {
+        this.log.info("device found: " + JSON.stringify(files));
+      } else {
+        this.log.info("device not found");
+      }
+      const device = this._reader.open(files[0]);
+      device.on("open", () => {
+        this.log.info("device on opened event");
+      });
+    });
     await this.setObjectNotExistsAsync("testVariable", {
       type: "state",
       common: {
@@ -65,8 +90,11 @@ class IrRemoteInput extends utils.Adapter {
   }
   onUnload(callback) {
     try {
-      callback();
+      this.log.debug("unloading...");
+      this._reader.close();
     } catch (e) {
+      this.log.info("error while unload: " + e);
+    } finally {
       callback();
     }
   }
