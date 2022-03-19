@@ -35,8 +35,7 @@ class IrRemoteInput extends utils.Adapter {
 
         // The adapters config (in the instance object everything under the attribute "native") is accessible via
         // this.config:
-        this.log.info('config option1: ' + this.config.option1);
-        this.log.info('config option2: ' + this.config.option2);
+        this.log.info('Device path configured: ' + this.config.devicePath);
 
         this._reader.on('EV_KEY', data => {
             this.log.info('key : ' + data.code + ' - ' + data.value);
@@ -50,20 +49,22 @@ class IrRemoteInput extends utils.Adapter {
         this._reader.on('error', err => {
             this.log.info('reader error : ' + err);
         });
-
-        this._reader.search('/dev/input/by-path', 'platform-ir-receiver@7-event', (err, files) => {
-            if(!err) {
-                this.log.info('device found: ' + JSON.stringify(files));
-            } else {
-                this.log.info('device not found');
+        // platform-ir-receiver@7-event
+        this._reader.search('/dev/input/by-path', this.config.devicePath, (err, devicePaths) => {
+            if(err) {
+                this.log.warn('No input device found for gicen config, run ls /dev/input/by-path/ to identify your device');
+                return;
             }
 
-            const device = this._reader.open(files[0]);
+            this.log.info('Devices found: ' + JSON.stringify(devicePaths));
+            if(devicePaths.length > 1) {
+                this.log.warn('More than one possible input device found, please configure a more precise path');
+            }
 
+            const device = this._reader.open(devicePaths[0]);
             device.on('open', () => {
-                this.log.info('device on opened event');
+                this.log.info('Device successfully opened');
             });
-
         });
 
         /*
@@ -117,7 +118,7 @@ class IrRemoteInput extends utils.Adapter {
      */
     private onUnload(callback: () => void): void {
         try {
-            this.log.debug('unloading...');
+            this.log.info('unloading...');
             // Here you must clear all timeouts or intervals that may still be active
             // clearTimeout(timeout1);
             // clearTimeout(timeout2);
@@ -125,7 +126,7 @@ class IrRemoteInput extends utils.Adapter {
             // clearInterval(interval1);
             this._reader.close();
         } catch (e) {
-            this.log.info('error while unload: ' + e);
+            this.log.warn('error while unloading: ' + e);
         } finally {
             callback();
         }

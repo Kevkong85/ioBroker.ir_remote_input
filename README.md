@@ -15,6 +15,22 @@
 
 Describe your project here
 
+## Prerequisites
+To make this work you will need some kind of IR receiver connected to the ioBroker host and a compatible remote.
+I am currently using the [joy-it MULTIMEDIACASE](https://joy-it.net/en/products/RB-MultimediaCase01) and the Logitech Harmony emulating a compatible remote.
+### Check if your setup is compatible
+Run the command `ir-keytable -t` on the ioBroker host and press some keys on your remote. If the terminal is reporting the events you will be fine.
+
+Remotes that are theoretically compatible with your host system can be listed with the command `ls /lib/udev/rc_keymaps`.
+
+This is also dependant of the capabilities of your IR receiver. Running the `ir-keytable` will give you some more info on the properties of your adapter, including the enabled and supported protocols.
+
+> TODO: If I have time for research I should add links to resources on how to read and change those keytable files and how to create a custom keytable file if needed.
+
+> I have no idea why, but to access the input table the rights must be set correctly on the receiver, for example `sudo chmod -R 775 /dev/input/by-path/platform-ir-receiver@7-event`
+
+
+
 ## Developer manual
 This section is intended for the developer. It can be deleted later
 
@@ -139,3 +155,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+TODO:
+teste crc adapter
+teste HID adapter
+teste ob remotes separiert werden koennen
