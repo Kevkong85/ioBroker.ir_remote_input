@@ -6,7 +6,7 @@
     "name": "kevkong",
     "email": "psikeo@gmail.com"
   },
-  "homepage": "https://github.com/kevkong/ioBroker.ir_remote_input",
+  "homepage": "https://github.com/kevkong85/ioBroker.ir_remote_input",
   "license": "MIT",
   "keywords": [
     "ioBroker",
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kevkong/ioBroker.ir_remote_input"
+    "url": "https://github.com/kevkong85/ioBroker.ir_remote_input"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.0",
@@ -75,7 +75,7 @@
     "build:dev": "npm run build && npm pack && cd /opt/iobroker && npm install /home/pi/projects/ioBroker.ir_remote_input/iobroker.ir_remote_input-0.0.1.tgz && iobroker upload ir_remote_input"
   },
   "bugs": {
-    "url": "https://github.com/kevkong/ioBroker.ir_remote_input/issues"
+    "url": "https://github.com/kevkong85/ioBroker.ir_remote_input/issues"
   },
   "readmeFilename": "README.md"
 }
