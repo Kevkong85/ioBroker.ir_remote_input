@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.0",
-    "evdev": "^0.3.0"
+    "evdev": "^0.3.0",
+    "rxjs": "^7.5.5"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^2.2.2",

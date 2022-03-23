@@ -158,6 +158,4 @@ SOFTWARE.
 
 
 TODO:
-teste crc adapter
-teste HID adapter
 teste ob remotes separiert werden koennen

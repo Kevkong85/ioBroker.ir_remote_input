@@ -8,11 +8,14 @@ import * as utils from '@iobroker/adapter-core';
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
-import EvdevReader from 'evdev';
+import { ReaderManger } from './reader.manager';
+import { StateStoreService } from './stateStore.service';
 
 class IrRemoteInput extends utils.Adapter {
 
-    private _reader: EvdevReader;
+    // private _reader: EvdevReader;
+    private _stateStore: StateStoreService;
+    private _readerManager: ReaderManger;
 
     public constructor(options: Partial<utils.AdapterOptions> = {}) {
         super({
@@ -24,7 +27,9 @@ class IrRemoteInput extends utils.Adapter {
         // this.on('objectChange', this.onObjectChange.bind(this));
         // this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
-        this._reader = new EvdevReader({ raw: false });
+        // this._reader = new EvdevReader({ raw: false });
+        this._stateStore = new StateStoreService(this);
+        this._readerManager = new ReaderManger(this, this._stateStore);
     }
 
     /**
@@ -36,56 +41,59 @@ class IrRemoteInput extends utils.Adapter {
         // The adapters config (in the instance object everything under the attribute "native") is accessible via
         // this.config:
         this.log.info('Device path configured: ' + this.config.devicePath);
+        await this._stateStore.init();
+        this._readerManager.init(this.config.devicePath);
 
-        this._reader.on('EV_KEY', data => {
-            this.log.info('key : ' + data.code + ' - ' + data.value);
-        });
-        this._reader.on('EV_ABS', data => {
-            this.log.info('Absolute axis : ' + data.code + ' - ' + data.value);
-        });
-        this._reader.on('EV_REL', data => {
-            this.log.info('Relative axis : ' + data.code + ' - ' + data.value);
-        });
-        this._reader.on('error', err => {
-            this.log.info('reader error : ' + err);
-        });
+        // this._reader.on('EV_KEY', data => {
+        //     this.log.info('data: ' + JSON.stringify(data));
+        //     this.log.info('key : ' + data.code + ' - ' + data.value);
+        // });
+        // this._reader.on('EV_ABS', data => {
+        //     this.log.info('Absolute axis : ' + data.code + ' - ' + data.value);
+        // });
+        // this._reader.on('EV_REL', data => {
+        //     this.log.info('Relative axis : ' + data.code + ' - ' + data.value);
+        // });
+        // this._reader.on('error', err => {
+        //     this.log.info('reader error : ' + err);
+        // });
         // platform-ir-receiver@7-event
-        this._reader.search('/dev/input/by-path', this.config.devicePath, (err, devicePaths) => {
-            if(err) {
-                this.log.warn('No input device found for gicen config, run ls /dev/input/by-path/ to identify your device');
-                return;
-            }
+        // this._reader.search('/dev/input/by-path', this.config.devicePath, (err, devicePaths) => {
+        //     if(err) {
+        //         this.log.warn('No input device found for given config, run ls /dev/input/by-path/ to identify your device');
+        //         return;
+        //     }
 
-            this.log.info('Devices found: ' + JSON.stringify(devicePaths));
-            if(devicePaths.length > 1) {
-                this.log.warn('More than one possible input device found, please configure a more precise path');
-            }
+        //     this.log.info('Devices found: ' + JSON.stringify(devicePaths));
+        //     if(devicePaths.length > 1) {
+        //         this.log.warn('More than one possible input device found, please configure a more precise path');
+        //     }
 
-            const device = this._reader.open(devicePaths[0]);
-            device.on('open', () => {
-                this.log.info('Device successfully opened');
-            });
-        });
+        //     const device = this._reader.open(devicePaths[0]);
+        //     device.on('open', () => {
+        //         this.log.info('Device successfully opened');
+        //     });
+        // });
 
         /*
         For every state in the system there has to be also an object of type state
         Here a simple template for a boolean variable named "testVariable"
         Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
         */
-        await this.setObjectNotExistsAsync('testVariable', {
-            type: 'state',
-            common: {
-                name: 'testVariable',
-                type: 'boolean',
-                role: 'indicator',
-                read: true,
-                write: true,
-            },
-            native: {},
-        });
+        // await this.setObjectNotExistsAsync('testVariable', {
+        //     type: 'state',
+        //     common: {
+        //         name: 'testVariable',
+        //         type: 'boolean',
+        //         role: 'indicator',
+        //         read: true,
+        //         write: true,
+        //     },
+        //     native: {},
+        // });
 
         // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-        this.subscribeStates('testVariable');
+        this.subscribeStates('*');
         // You can also add a subscription for multiple states. The following line watches all states starting with "lights."
         // this.subscribeStates('lights.*');
         // Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
@@ -96,14 +104,14 @@ class IrRemoteInput extends utils.Adapter {
             you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
         */
         // the variable testVariable is set to true as command (ack=false)
-        await this.setStateAsync('testVariable', true);
+        // await this.setStateAsync('testVariable', true);
 
         // same thing, but the value is flagged "ack"
         // ack should be always set to true if the value is received from or acknowledged from the target system
-        await this.setStateAsync('testVariable', { val: true, ack: true });
+        // await this.setStateAsync('testVariable', { val: true, ack: true });
 
         // same thing, but the state is deleted after 30s (getState will return null afterwards)
-        await this.setStateAsync('testVariable', { val: true, ack: true, expire: 30 });
+        // await this.setStateAsync('testVariable', { val: true, ack: true, expire: 30 });
 
         // examples for the checkPassword/checkGroup functions
         let result = await this.checkPasswordAsync('admin', 'iobroker');
@@ -119,12 +127,7 @@ class IrRemoteInput extends utils.Adapter {
     private onUnload(callback: () => void): void {
         try {
             this.log.info('unloading...');
-            // Here you must clear all timeouts or intervals that may still be active
-            // clearTimeout(timeout1);
-            // clearTimeout(timeout2);
-            // ...
-            // clearInterval(interval1);
-            this._reader.close();
+            this._readerManager.destroy();
         } catch (e) {
             this.log.warn('error while unloading: ' + e);
         } finally {
