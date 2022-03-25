@@ -50,7 +50,7 @@ export class StateStoreService implements IStore {
                 return of(value);
             }),
             takeUntil(this._unsubscribe$)
-        ).subscribe(value => this._adapterInstance.log.info('SUB CALLED ' + JSON.stringify(value)));
+        ).subscribe();
     }
 
     public setKeyPress(key: string): void {
@@ -69,7 +69,6 @@ export class StateStoreService implements IStore {
     private async _write(state: string, key: string): Promise<{state: string, key: string}> {
         return new Promise((resolve, reject) => {
             this._adapterInstance.setStateChanged(state, { val: key, ack: true }, (err) => {
-                this._adapterInstance.log.info('CALLBACK HAPPENED');
                 err ? reject(null) : resolve({state: state, key: key});
             });
         });

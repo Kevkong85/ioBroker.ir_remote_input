@@ -56,7 +56,7 @@ class StateStoreService {
       return this._write(value.state, value.key);
     })).pipe((0, import_rxjs.concatMap)((value) => {
       return (0, import_rxjs.of)(value);
-    })).subscribe((value) => this._adapterInstance.log.info("SUB CALLED " + JSON.stringify(value)));
+    }), (0, import_rxjs.takeUntil)(this._unsubscribe$)).subscribe();
   }
   setKeyPress(key) {
     this._writeBuffer$.next({ state: STATE_KEYPRESS, key });
@@ -71,7 +71,6 @@ class StateStoreService {
   async _write(state, key) {
     return new Promise((resolve, reject) => {
       this._adapterInstance.setStateChanged(state, { val: key, ack: true }, (err) => {
-        this._adapterInstance.log.info("CALLBACK HAPPENED");
         err ? reject(null) : resolve({ state, key });
       });
     });

@@ -39,20 +39,13 @@ class IrRemoteInput extends utils.Adapter {
       name: "ir_remote_input"
     }));
     this.on("ready", this.onReady.bind(this));
-    this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
     this._stateStore = new import_stateStore.StateStoreService(this);
     this._readerManager = new import_reader.ReaderManger(this, this._stateStore);
   }
   async onReady() {
-    this.log.info("Device path configured: " + this.config.devicePath);
     await this._stateStore.init();
     this._readerManager.init(this.config.devicePath);
-    this.subscribeStates("*");
-    let result = await this.checkPasswordAsync("admin", "iobroker");
-    this.log.info("check user admin pw iobroker: " + result);
-    result = await this.checkGroupAsync("admin", "admin");
-    this.log.info("check group user admin group admin: " + result);
   }
   onUnload(callback) {
     try {
@@ -62,13 +55,6 @@ class IrRemoteInput extends utils.Adapter {
       this.log.warn("error while unloading: " + e);
     } finally {
       callback();
-    }
-  }
-  onStateChange(id, state) {
-    if (state) {
-      this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-    } else {
-      this.log.info(`state ${id} deleted`);
     }
   }
 }

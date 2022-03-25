@@ -1,6 +1,6 @@
 import { AdapterInstance } from '@iobroker/adapter-core';
 import EvdevReader, { Evdev } from 'evdev';
-import { debounceTime, filter, finalize, first, map, merge, of, race, repeat, Subject, switchMap, take, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { filter, finalize, first, map, race, Subject, switchMap, takeUntil, takeWhile } from 'rxjs';
 import { IStore } from './stateStore.service';
 
 export class ReaderManger {
@@ -15,20 +15,14 @@ export class ReaderManger {
         this._reader = new EvdevReader({ raw: false });
 
         this._keyEvent$.pipe(
-            takeUntil(this._unsubscribe$)
-        ).subscribe(data => {
-            this._adapterInstance.log.info('KEY EVENT: ' + JSON.stringify(data));
-        });
-
-        this._keyEvent$.pipe(
             filter(data => data.value === 1),
             switchMap(startEvent => race([
-                this._keyEvent$.pipe(tap(_ => this._adapterInstance.log.info('first race member')), filter(data => data.value === 0), map(_ => startEvent), first()),
-                this._keyEvent$.pipe(tap(_ => this._adapterInstance.log.info('second race member')), takeWhile(data => data.value === 2))
-            ]).pipe(finalize(() => { this._adapterInstance.log.info('FINALIZE'); this._clearKeyEvents();}))),
+                this._keyEvent$.pipe(filter(data => data.value === 0), map(_ => startEvent), first()),
+                this._keyEvent$.pipe(takeWhile(data => data.value === 2))
+            ]).pipe(finalize(() => { this._clearKeyEvents(); }))),
             takeUntil(this._unsubscribe$),
             finalize(() => this._clearKeyEvents())
-        ).subscribe(data => { this._adapterInstance.log.info('SUBSCRIPTION'); this._setKeyEvent(data); });
+        ).subscribe(data => { this._setKeyEvent(data); });
     }
 
     public init(devicePath: string): void {
@@ -40,7 +34,7 @@ export class ReaderManger {
         });
 
         this._reader.search('/dev/input/by-path', devicePath, (err, devicePaths) => {
-            if(err) {
+            if(err || !devicePaths.length) {
                 this._adapterInstance.log.warn('No input device found for given config, run ls /dev/input/by-path/ to identify your device');
                 return;
             }
@@ -64,13 +58,11 @@ export class ReaderManger {
     }
 
     private _clearKeyEvents(): void {
-        this._adapterInstance.log.info('_clearKeyEvents called');
         this._store.setKeyPress('');
         this._store.setKeyLongPress('');
     }
 
     private _setKeyEvent(data: Evdev.Event): void {
-        this._adapterInstance.log.info('setting key event: ' + JSON.stringify(data));
         if(data.value === 1) {
             this._store.setKeyPress(data.code);
         }
