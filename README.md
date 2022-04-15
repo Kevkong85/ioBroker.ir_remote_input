@@ -130,7 +130,7 @@ For later updates, the above procedure is not necessary. Just do the following:
     ### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.0.2 (2022-04-15)
 * (kevkong85) initial release
 
 ## License
